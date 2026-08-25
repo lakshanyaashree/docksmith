@@ -1,0 +1,16 @@
+[Unit]
+Description=Docksmith Flask API
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/ubuntu/docksmith
+ExecStart=/usr/bin/python3 /home/ubuntu/docksmith/api.py
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/home/ubuntu/docksmith/api.log
+StandardError=append:/home/ubuntu/docksmith/api-error.log
+
+[Install]
+WantedBy=multi-user.target
