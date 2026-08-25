@@ -187,7 +187,7 @@ over HTTP for remote triggering without direct shell access:
 
 **Example usage:**
 ```
-\`\`\`bash
+#bash
 curl -X POST http://<host>:5000/build -H "Content-Type: application/json" \\
   -d '{"tag": "myapp:latest", "context": "sampleapp/"}'
 
@@ -195,7 +195,7 @@ curl http://<host>:5000/images
 
 curl -X POST http://<host>:5000/run -H "Content-Type: application/json" \\
   -d '{"tag": "myapp:latest", "env": {"GREETING": "Heyyyy"}}'
-\`\`\`
+
 ```
 Note: `/run` internally uses `sudo` since container isolation requires root for `chroot`, while
 `/build` runs unprivileged unless a `RUN` instruction in the Docksmithfile needs elevated access.
