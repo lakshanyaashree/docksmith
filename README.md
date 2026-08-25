@@ -43,6 +43,9 @@ docksmith/
 ├── sampleapp/
 │   ├── Docksmithfile   # Uses all 6 instructions
 │   └── app.sh          # Sample app script
+├── deploy/
+|   └── docksmith-api.service
+├── api.py
 ├── import_base.py      # One-time base image importer
 ├── setup.py
 └── README.md
@@ -199,7 +202,53 @@ curl -X POST http://<host>:5000/run -H "Content-Type: application/json" \\
 ```
 Note: `/run` internally uses `sudo` since container isolation requires root for `chroot`, while
 `/build` runs unprivileged unless a `RUN` instruction in the Docksmithfile needs elevated access.
+---
 
+### Running as a systemd Service
+
+The API runs as a systemd service (see `deploy/docksmith-api.service`) rather than a manually-started
+script, so it:
+- Starts automatically on VM boot
+- Restarts automatically if the process crashes (`Restart=on-failure`)
+- Runs independently of any SSH session
+
+**To deploy this yourself on a fresh Ubuntu VM:**
+
+1. Clone this repo and install Docksmith:
+   ```
+   git clone <this-repo-url>
+   cd docksmith
+   pip3 install -e . --break-system-packages
+   pip3 install flask --break-system-packages
+   ```
+2. Copy the service file into systemd and adjust paths inside it if your clone location differs:
+   ```
+   #bash
+   sudo cp deploy/docksmith-api.service /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl enable docksmith-api
+   sudo systemctl start docksmith-api
+   ```
+4. Verify:
+   ```
+   #bash
+   sudo systemctl status docksmith-api
+   curl http://localhost:5000/images
+   ```
+
+**Note:** the service currently runs as `root`, since the `/run` endpoint internally requires `sudo` for
+`chroot`-based container isolation, and non-interactive systemd services can't handle sudo password
+prompts. A tighter setup would scope a sudoers rule to just the `docksmith` binary and run the service
+as a regular user — noted here as a known simplification rather than a production-grade permission model.
+```
+Useful commands:
+#bash
+
+sudo systemctl restart docksmith-api      # after editing api.py
+sudo journalctl -u docksmith-api -f       # live systemd logs
+cat api-error.log                         # Flask/Python tracebacks
+```
+---
 ## License
 
 MIT
