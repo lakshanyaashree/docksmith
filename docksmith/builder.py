@@ -54,7 +54,7 @@ def extract_layers(layer_digests, target_dir):
         if not os.path.exists(tar_path):
             raise FileNotFoundError(f"Layer {digest} not found on disk.")
         with tarfile.open(tar_path, "r") as tar:
-            tar.extractall(path=target_dir)
+            tar.extractall(path=target_dir,filter = "fully_trusted")
 
 def run_in_isolation(command, rootfs, workdir, env_vars):
     full_workdir = os.path.join(rootfs, workdir.lstrip("/")) if workdir else rootfs

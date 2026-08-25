@@ -2,4 +2,6 @@ echo "*.egg-info/
 __pycache__/
 *.pyc
 .env
+*.tar.gz
+.docksmith/
 " > .gitignore

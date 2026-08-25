@@ -12,7 +12,7 @@ def extract_layers(layer_digests, target_dir):
         if not os.path.exists(tar_path):
             raise FileNotFoundError(f"Layer {digest} not found on disk.")
         with tarfile.open(tar_path, "r") as tar:
-            tar.extractall(path=target_dir)
+            tar.extractall(path=target_dir,filter = "fully_trusted")
 
 def run_container(name, tag, cmd_override=None, env_overrides=None):
     if env_overrides is None:
